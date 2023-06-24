@@ -1,0 +1,25 @@
+{
+    "fields": [
+        {
+            "field_name": "资源类型",
+            "field_id": "res_type",
+            "locate_method": "querySeletor",
+            "location": "#concept-isb-scd-5db-entry-8bj-2qe-6c4",
+            "hint_popup": [{
+                "title": "提示主题",
+                "content": "提示内容，提示内容，提示内容"
+              },
+              {
+                "title": "提示主题2",
+                "content": "提示内容，提示内容，提示内容"
+              },
+              {
+                "title": "提示主题3",
+                "content": "提示内容，提示内容，提示内容"
+              }]
+        }
+    ],
+     "verification": [
+
+     ]
+}

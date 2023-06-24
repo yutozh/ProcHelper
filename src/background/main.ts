@@ -1,5 +1,7 @@
 import { onMessage, sendMessage } from 'webext-bridge/background'
 import type { Tabs } from 'webextension-polyfill'
+import * as settings from '../assets/config.json'
+import { storageConf } from '~/logic/storage'
 
 // only on dev mode
 if (import.meta.hot) {
@@ -9,9 +11,12 @@ if (import.meta.hot) {
   import('./contentScriptHMR')
 }
 
-browser.runtime.onInstalled.addListener((): void => {
+browser.runtime.onInstalled.addListener(async () => {
   // eslint-disable-next-line no-console
   console.log('Extension installed')
+  // eslint-disable-next-line no-console
+  console.log(settings)
+  storageConf.value = settings
 })
 
 let previousTabId = 0
