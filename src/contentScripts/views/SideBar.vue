@@ -10,7 +10,8 @@ const activeCollapse = ref([''])
 const table = ref(false)
 const loading = ref(false)
 const verifiedCount = ref(0)
-const gridData: { [key: string]: string }[] = reactive([])
+const gridData1: { [key: string]: string }[] = reactive([])
+const gridData2: { [key: string]: string }[] = reactive([])
 const verification = storageConf.value.verification
 
 function onControlBtnClick() {
@@ -36,7 +37,8 @@ function onControlBtnClick() {
 function onOpenFun() {
   loading.value = true
   verifiedCount.value = 0
-  gridData.splice(0, gridData.length)
+  gridData1.splice(0, gridData1.length)
+  gridData2.splice(0, gridData2.length)
   for (const item of verification) {
     verifiedCount.value += 1
     if (item.locateMethod === 'querySelector') {
@@ -53,13 +55,22 @@ function onOpenFun() {
         const [result, detail] = vfun(ele.innerHTML)
         console.log(result)
         console.log(detail)
-        gridData.push({
+        gridData1.push({
           verifyObj: item.verifyObj,
           verifyInfo: item.verifyInfo,
+          locateMethod: item.locateMethod,
+          location: item.location,
           result,
           detail,
         })
-        console.log(gridData)
+        gridData2.push({
+          verifyObj: item.verifyObj,
+          verifyInfo: item.verifyInfo,
+          locateMethod: item.locateMethod,
+          location: item.location,
+          result,
+          detail,
+        })
         // if (result) {
 
         // }
@@ -71,8 +82,34 @@ function onOpenFun() {
   }, 1000)
 }
 
-function handleResBtnLocate() {
+function handleResBtnLocate(grid: string, index: number) {
+  let item = null
+  if (grid === 'main')
+    item = gridData1[index]
+  else if (grid === 'hidden')
+    item = gridData2[index]
+  else
+    return
 
+  console.log(item)
+  if (item.locateMethod === 'querySelector') {
+    const ele = document.querySelector(item.location)
+    ele?.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
+function handleResBtnCopy(row: { [key: string]: string }) {
+  navigator.clipboard.writeText(row.detail).then(() => {
+    ElMessage({
+      message: '复制成功',
+      type: 'success',
+    })
+  }, () => {
+    ElMessage({
+      message: '复制失败，请检查浏览器权限',
+      type: 'warning',
+    })
+  })
 }
 </script>
 
@@ -101,20 +138,20 @@ function handleResBtnLocate() {
       v-loading="loading"
       :element-loading-text="`校验中，请等待（${verifiedCount}/${verification.length}）`"
     >
-      <el-table :data="gridData" table-layout="fixed" class="prochelper-table">
+      <el-table :data="gridData1" table-layout="fixed" class="prochelper-table">
         <el-table-column property="verifyObj" label="检查项" width="150" />
         <el-table-column property="verifyInfo" label="检查内容" width="150" />
         <el-table-column property="result" label="结果" />
         <el-table-column property="detail" label="详细信息" />
         <el-table-column label="操作" fixed="right" width="100">
-          <template #default>
+          <template #default="scope">
             <el-tooltip
               class="box-item"
               effect="light"
               content="定位"
               placement="top"
             >
-              <el-button link type="primary" size="small" @click="handleResBtnLocate">
+              <el-button link type="primary" size="small" @click.prevent="handleResBtnLocate('main', scope.$index)">
                 <material-symbols-location-on-outline class="inline-block m-auto text-lg" />
               </el-button>
             </el-tooltip>
@@ -125,7 +162,7 @@ function handleResBtnLocate() {
               content="复制检查结果"
               placement="top"
             >
-              <el-button link type="primary" size="small">
+              <el-button link type="primary" size="small" @click.prevent="handleResBtnCopy(scope.row)">
                 <mingcute-copy-2-line class="inline-block m-auto text-lg" />
               </el-button>
             </el-tooltip>
@@ -134,21 +171,21 @@ function handleResBtnLocate() {
       </el-table>
 
       <el-collapse v-model="activeCollapse" class="mt-12">
-        <el-collapse-item :title="`已折叠${gridData.length}项无异常结果，点击查看`" name="1">
-          <el-table :data="gridData" table-layout="fixed" class="prochelper-table">
+        <el-collapse-item :title="`已折叠${gridData2.length}项无异常结果，点击查看`" name="1">
+          <el-table :data="gridData2" table-layout="fixed" class="prochelper-table">
             <el-table-column property="verifyObj" label="检查项" width="150" />
             <el-table-column property="verifyInfo" label="检查内容" width="150" />
             <el-table-column property="result" label="结果" />
             <el-table-column property="detail" label="详细信息" />
             <el-table-column label="操作" fixed="right" width="100">
-              <template #default>
+              <template #default="scope">
                 <el-tooltip
                   class="box-item"
                   effect="light"
                   content="定位"
                   placement="top"
                 >
-                  <el-button link type="primary" size="small" @click="handleResBtnLocate">
+                  <el-button link type="primary" size="small" @click.prevent="handleResBtnLocate('hidden', scope.$index)">
                     <material-symbols-location-on-outline class="inline-block m-auto text-lg" />
                   </el-button>
                 </el-tooltip>
@@ -159,7 +196,7 @@ function handleResBtnLocate() {
                   content="复制检查结果"
                   placement="top"
                 >
-                  <el-button link type="primary" size="small">
+                  <el-button link type="primary" size="small" @click.prevent="handleResBtnCopy(scope.row)">
                     <mingcute-copy-2-line class="inline-block m-auto text-lg" />
                   </el-button>
                 </el-tooltip>
