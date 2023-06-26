@@ -20,6 +20,18 @@
         }
     ],
      "verification": [
-
-     ]
+        {
+            "id": "a",
+            "name": "测试1",
+            "verifyObj": "资源类型",
+            "verifyInfo": "检查资源类型是否含有数字",
+            "locateMethod": "querySelector",
+            "location": "#entry-nqv-eoe-vhg",
+            "verifyMethod": "hasDigit"
+        }
+     ],
+     "form_container": {
+        "locate_method": "querySeletor",
+        "location": "table"
+     }
 }
