@@ -4,18 +4,21 @@
             "field_name": "资源类型",
             "field_id": "res_type",
             "locate_method": "querySeletor",
-            "location": "#concept-isb-scd-5db-entry-8bj-2qe-6c4",
+            "location": "div.issue-detail_fields.mt-2 > div:nth-child(2) > div.issue-detail__label.text-muted.text-bold.mr-4.fs-14",
             "hint_popup": [{
                 "title": "提示主题",
-                "content": "提示内容，提示内容，提示内容"
+                "content": "提示内容，提示内容，提示内容",
+                "config": {}
               },
               {
-                "title": "提示主题2",
-                "content": "提示内容，提示内容，提示内容"
+                "title": "提示主题",
+                "content": "提示内容，提示内容，提示内容",
+                "config": {}
               },
               {
-                "title": "提示主题3",
-                "content": "提示内容，提示内容，提示内容"
+                "title": "提示主题",
+                "content": "提示内容，提示内容，提示内容",
+                "config": {}
               }]
         }
     ],
@@ -33,5 +36,9 @@
      "form_container": {
         "locate_method": "querySeletor",
         "location": "table"
+     },
+     "show_condition_for_tooltip": {
+        "locate_method": "querySeletor",
+        "location": "[class='ge-drawer active ge-issue-detail-drawer']"
      }
 }

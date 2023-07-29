@@ -43,7 +43,7 @@ export async function getManifest() {
     content_scripts: [
       {
         matches: [
-          'https://help.aliyun.com/*',
+          'https://e.gitee.com/*',
         ],
         js: [
           'dist/contentScripts/index.global.js',
