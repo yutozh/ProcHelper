@@ -14,7 +14,7 @@ onMessage('tab-prev', ({ data }) => {
   console.log(`[vitesse-webext] Navigate from page "${data.title}"`)
 })
 
-let tooltipSet: HTMLElement[] = []
+const tooltipSet: HTMLElement[] = []
 
 // 页面加载完毕检测，成功后，开始加载组件
 function initChecker(_event: any) {
@@ -26,21 +26,22 @@ function initChecker(_event: any) {
   function checkForFinish() {
     if (document.querySelector('.ge-drawer-layer')) {
       clearInterval(checkTimer)
-      setTimeout(()=>{
+      setTimeout(() => {
         pageCompleted()
       }, 2000)
     }
-    if (checkCount > checkMaxCount) {
+    if (checkCount > checkMaxCount)
       clearInterval(checkTimer)
-    }
-    checkCount ++
+    checkCount++
   }
 }
 
 function labelDetecter(node: HTMLElement | Document) {
+  console.log(node.nodeType)
+
   const specEleClassList = ['.issue-detail_fields.mt-2']
   for (const eleCls of specEleClassList) {
-    if (node.querySelector(eleCls)) {
+    if (node.nodeType !== Node.TEXT_NODE && node.querySelector(eleCls)) {
       console.info('Detected label field for tooltip position')
       return true
     }
@@ -77,12 +78,11 @@ function startObserver() {
 
   // 监听页面变化，符合要求时，初始化tooltip
   if (labelDetecter(document)) {
-    setTimeout(()=>{
+    setTimeout(() => {
       initTooltip()
     }, 1000)
   }
 }
-
 
 // 页面元素变化的回调函数
 function observerCallback(mutationList: any, _: any) {
@@ -93,22 +93,20 @@ function observerCallback(mutationList: any, _: any) {
         console.info(node)
         // 出现特定类型的label元素后，创建tooltip。需要注意所选的元素出现时，tooltip挂载的元素是否已加载
         if (labelDetecter(node)) {
-          setTimeout(()=>{
+          setTimeout(() => {
             initTooltip()
           }, 1000)
           inited = true
           break
         }
-        
       }
     }
     else if (mutation.type === 'attributes') {
       // console.log(`The ${mutation.attributeName} attribute was modified.`)
     }
 
-    if (inited) {
+    if (inited)
       break
-    }
   }
 }
 
@@ -128,28 +126,29 @@ function initSidear() {
 }
 
 function initTooltip() {
-  console.log("????????????????????????????????")
+  console.log('????????????????????????????????')
   deleteTooltip()
 
   // 遍历配置中各个字段，找到相应的标签，将tooltip初始化
-  const fieldList = storageConf.value.fields
-  for (const field of fieldList) {
+  const promptsList = storageConf.value.prompts
+  console.log(promptsList)
+  for (const prompt of promptsList) {
     const tooltip = createApp(Tooltip)
 
     tooltip.use(ElementPlus)
     setupApp(tooltip)
     const mountEle = document.createElement('div')
     mountEle.setAttribute('class', '')
-    console.log(field.location)
-    const thEle = document.querySelector(field.location)
-    thEle.classList.add('flex');
-    thEle.classList.add('items-center');
+    console.log(prompt.location)
+    const thEle = document.querySelector(prompt.location)
+    thEle.classList.add('flex')
+    thEle.classList.add('items-center')
     thEle?.appendChild(mountEle)
 
     // pass info to app by the 'vm' and 'toRef'
     const vm = tooltip.mount(mountEle)
     const info = toRef<any, string>(vm, 'info')
-    info.value = field.hint_popup
+    info.value = prompt.hint_popup
 
     tooltipSet.push(mountEle)
     console.log(`title2.value: ${info.value}`) // --> My App
@@ -158,9 +157,7 @@ function initTooltip() {
   // app.mount(root)
 }
 
-
 function deleteTooltip() {
-  for (let tip of tooltipSet) {
+  for (const tip of tooltipSet)
     tip.remove()
-  }
 }

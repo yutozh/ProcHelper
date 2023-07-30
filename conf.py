@@ -7,14 +7,14 @@ def read_config(path):
     value1 = read1(data_book.worksheets[0])
 
     result = {
-        "fields": value1,
+        "prompts": value1,
         "verification": [],
         "form_container": {
-            "locate_method": "querySeletor",
+            "locate_method": "querySelector",
             "location": "table"
         },
         "show_condition_for_tooltip": {
-            "locate_method": "querySeletor",
+            "locate_method": "querySelector",
             "location": "[class='ge-drawer active ge-issue-detail-drawer']"
         }
     }

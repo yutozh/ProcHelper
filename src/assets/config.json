@@ -1,44 +1,70 @@
 {
-    "fields": [
+  "prompts": [
+    {
+      "field_name": "资源类型",
+      "field_id": "res_type",
+      "locate_method": "querySelector",
+      "location": "div.issue-detail_fields.mt-2 > div:nth-child(2) > div.issue-detail__label.text-muted.text-bold.mr-4.fs-14",
+      "hint_popup": [
         {
-            "field_name": "资源类型",
-            "field_id": "res_type",
-            "locate_method": "querySeletor",
-            "location": "div.issue-detail_fields.mt-2 > div:nth-child(2) > div.issue-detail__label.text-muted.text-bold.mr-4.fs-14",
-            "hint_popup": [{
-                "title": "提示主题",
-                "content": "提示内容，提示内容，提示内容",
-                "config": {}
-              },
-              {
-                "title": "提示主题",
-                "content": "提示内容，提示内容，提示内容",
-                "config": {}
-              },
-              {
-                "title": "提示主题",
-                "content": "提示内容，提示内容，提示内容",
-                "config": {}
-              }]
-        }
-    ],
-     "verification": [
+          "title": "提示主题",
+          "content": "提示内容，提示内容，提示内容",
+          "config": {}
+        },
         {
-            "id": "a",
-            "name": "测试1",
-            "verifyObj": "资源类型",
-            "verifyInfo": "检查资源类型是否含有数字",
-            "locateMethod": "querySelector",
-            "location": "#entry-nqv-eoe-vhg",
-            "verifyMethod": "hasDigit"
+          "title": "提示主题",
+          "content": "提示内容，提示内容，提示内容",
+          "config": {}
+        },
+        {
+          "title": "提示主题",
+          "content": "提示内容，提示内容，提示内容",
+          "config": {}
         }
-     ],
-     "form_container": {
-        "locate_method": "querySeletor",
-        "location": "table"
-     },
-     "show_condition_for_tooltip": {
-        "locate_method": "querySeletor",
-        "location": "[class='ge-drawer active ge-issue-detail-drawer']"
-     }
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "field_id": "taskType",
+      "field_name": "类型",
+      "locate_method": "querySelector",
+      "location": "div.issue-detail_fields.mt-2 > div:nth-child(2) > div.ge-select.ge-select-borderless.ge-select-auto-width.ge-select-single > div > span.ge-select-selection-item > span",
+      "get_value_method": "innerText",
+      "custom_fun": ""
+    },
+    {
+      "field_id": "describe",
+      "field_name": "描述",
+      "locate_method": "querySelector",
+      "location": "div.ge-issue-detail-content-container > div:nth-child(2) > div.ge-issue-detail-description > div.markdown-body.content.flex-1.is-description.white > p",
+      "get_value_method": "innerText",
+      "custom_fun": ""
+    }
+  ],
+  "verification": [
+    {
+      "vid": "cs01",
+      "obj": "资源类型",
+      "info": "检查描述是否超过15个字符",
+      "detail": "",
+      "method": "hasDigit",
+      "fields": [
+        "taskType",
+        "describe"
+      ],
+      "params": {
+        "length": 15
+      },
+      "locate_field": "describe"
+    }
+  ],
+  "form_container": {
+    "locate_method": "querySelector",
+    "location": "[class='ge-drawer active ge-issue-detail-drawer']"
+  },
+  "show_condition_for_tooltip": {
+    "locate_method": "querySelector",
+    "location": "[class='ge-drawer active ge-issue-detail-drawer']"
+  }
 }

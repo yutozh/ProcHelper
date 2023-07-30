@@ -1,1 +1,39 @@
-{"fields": [{"platform": "plcm", "proc_type": "变更单", "field_id": "changeSummary", "field_name": "变更摘要", "locate_method": "querySelector", "location": "#changeSummary > div > div > div.form-field-control > div > div.ant-col.field-label", "other_config": "{}", "hint_popup": [{"title": "填写说明", "content": "说明变更的对象、版本信息，说明是试点还是推广，是紧急变更也需标明", "config": null}, {"title": "填写示例", "content": "(试点/推广) 大额系统服务端软件 V1.1.2.3:部署 XXX 脚本;", "config": null}, {"title": null, "content": null, "config": null}]}], "verification": [], "form_container": {"locate_method": "querySeletor", "location": "table"}, "show_condition_for_tooltip": {"locate_method": "querySeletor", "location": "[class='ge-drawer active ge-issue-detail-drawer']"}}
+{
+    "fields": [
+        {
+            "platform": "plcm",
+            "proc_type": "变更单",
+            "field_id": "changeSummary",
+            "field_name": "变更摘要",
+            "locate_method": "querySelector",
+            "location": "#changeSummary > div > div > div.form-field-control > div > div.ant-col.field-label",
+            "other_config": "{}",
+            "hint_popup": [
+                {
+                    "title": "填写说明",
+                    "content": "说明变更的对象、版本信息，说明是试点还是推广，是紧急变更也需标明",
+                    "config": null
+                },
+                {
+                    "title": "填写示例",
+                    "content": "(试点/推广) 大额系统服务端软件 V1.1.2.3:部署 XXX 脚本;",
+                    "config": null
+                },
+                {
+                    "title": null,
+                    "content": null,
+                    "config": null
+                }
+            ]
+        }
+    ],
+    "verification": [],
+    "form_container": {
+        "locate_method": "querySelector",
+        "location": "table"
+    },
+    "show_condition_for_tooltip": {
+        "locate_method": "querySelector",
+        "location": "[class='ge-drawer active ge-issue-detail-drawer']"
+    }
+}
