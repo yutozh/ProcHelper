@@ -23,12 +23,12 @@ export async function getManifest() {
     },
     background: isFirefox
       ? {
-          scripts: ['dist/background/index.mjs'],
-          type: 'module',
-        }
+        scripts: ['dist/background/index.mjs'],
+        type: 'module',
+      }
       : {
-          service_worker: './dist/background/index.mjs',
-        },
+        service_worker: './dist/background/index.mjs',
+      },
     icons: {
       16: './assets/icon-512.png',
       48: './assets/icon-512.png',
@@ -43,11 +43,16 @@ export async function getManifest() {
     content_scripts: [
       {
         matches: [
-          'https://e.gitee.com/*',
+          '*://plcm.cncc.cn:30080/osc/*',
+          '*://plcm.cncc.cn:30080/_team/*',
+        ],
+        exclude_matches: [
+          '*://plcm.cncc.cn:30080/osc/_proxima/*'
         ],
         js: [
           'dist/contentScripts/index.global.js',
         ],
+        all_frames: true
       },
     ],
     web_accessible_resources: [

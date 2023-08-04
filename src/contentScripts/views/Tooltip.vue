@@ -33,16 +33,14 @@ export default {
     <!-- <span class="inline-block v-mid "></span>  -->
     <span class="inline-flex items-center" hidden />
 
-    <el-popover
-      width="auto" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;
-                    max-width: 600px;"
-    >
+    <el-popover width="auto" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;
+                    max-width: 600px;">
       <template #reference>
         <material-symbols-info-outline-rounded class="m-auto text-lg" />
       </template>
       <template #default>
         <div class="rich-conent" style="display: flex; flex-direction: column">
-          <div v-for="item in info" :key="item" class="mb-2 mt-2">
+          <div v-for="item in info.filter(r => (r as any).title !== null)" :key="item" class="mb-2 mt-2">
             <span class="rich-content__name mt-2 font-bold">
               {{ (item as any).title }}
             </span>

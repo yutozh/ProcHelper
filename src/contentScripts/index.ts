@@ -7,39 +7,54 @@ import SideBar from './views/SideBar.vue'
 import { setupApp } from '~/logic/common-setup'
 import 'element-plus/dist/index.css'
 import { storageConf } from '~/logic/storage'
+import { getElement, getDocument, getPageConfig } from '~/utils/commUtils'
 
-window.addEventListener('load', initChecker, false)
+window.addEventListener('load', (event) => setTimeout((event) => initChecker(event), 1500), false)
 // communication example: send previous tab title from background page
 onMessage('tab-prev', ({ data }) => {
   console.log(`[vitesse-webext] Navigate from page "${data.title}"`)
 })
 
 const tooltipSet: HTMLElement[] = []
+// const pageType = storageConf.value.page_type
+let pageConfig: any = null
 
 // 页面加载完毕检测，成功后，开始加载组件
 function initChecker(_event: any) {
-  const checkInterval = 200
-  const checkMaxTime = 10000 // 最大检查时间
+  // 根据url读取相应的页面配置信息
+  pageConfig = getPageConfig(storageConf.value.page_config, window.location.href)
+  if (!pageConfig) {
+    console.log("没有找到页面配置项，请检查")
+    return
+  }
+
+  const checkInterval = 1000
+  const checkMaxTime = 20000 // 最大检查时间
   const checkMaxCount = checkMaxTime / checkInterval
   let checkCount = 0
-  const checkTimer = setInterval(checkForFinish, 150)
+  const checkTimer = setInterval(checkForFinish, checkInterval)
+
+
   function checkForFinish() {
-    if (document.querySelector('.ge-drawer-layer')) {
+    if (getElement(pageConfig.page_type, pageConfig.condition_for_pageload.locate_method, pageConfig.condition_for_pageload.location)) {
       clearInterval(checkTimer)
       setTimeout(() => {
-        pageCompleted()
+        pageCompleted(pageConfig.init_type)
       }, 2000)
+    } else {
+      console.log("Page not inited")
     }
-    if (checkCount > checkMaxCount)
+    if (checkCount > checkMaxCount) {
+      console.log("Exceeded the maximum number of init check")
       clearInterval(checkTimer)
+    }
     checkCount++
   }
 }
 
 function labelDetecter(node: HTMLElement | Document) {
-  console.log(node.nodeType)
-
-  const specEleClassList = ['.issue-detail_fields.mt-2']
+  // 判断传入的node中，是否含有指定条件的元素（该元素的出现是判断是否要渲染tooltip的要素）
+  const specEleClassList = pageConfig.condition_for_tooltip_label.locations
   for (const eleCls of specEleClassList) {
     if (node.nodeType !== Node.TEXT_NODE && node.querySelector(eleCls)) {
       console.info('Detected label field for tooltip position')
@@ -51,33 +66,46 @@ function labelDetecter(node: HTMLElement | Document) {
 
 function initCss() {
   // inject css
-  const styleEl = document.createElement('link')
+  const styleEl = getDocument(pageConfig.page_type).createElement('link')
   styleEl.setAttribute('rel', 'stylesheet')
   styleEl.setAttribute('href', browser.runtime.getURL('dist/contentScripts/style.css'))
-  document.head.appendChild(styleEl)
+  getDocument(pageConfig.page_type).head.appendChild(styleEl)
+
+  // if (pageConfig.page_type === 'normal') {
+  //   document.head.appendChild(styleEl)
+  // } else if (pageConfig.page_type === 'iframe') {
+  //   document.querySelector("iframe")!.contentWindow!.document.head.appendChild(styleEl)
+  // }
 }
 
 // 页面加载成功后，创建固定元素；根据页面内容，选择是否创建tooltip
-function pageCompleted() {
+function pageCompleted(initType: string) {
   initCss()
   initSidear()
-  startObserver()
-  // if (document.querySelector('[class="ge-drawer active ge-issue-detail-drawer"]')) {
-  //   initTooltip()
-  // }
+  if (initType === 'observer') {
+    startObserver()
+  } else if (initType === 'direct') {
+    initTooltip()
+  }
 }
 
 function startObserver() {
   // 监听元素变化，符合要求时，初始化tooltip
-  const targetNode = document.querySelector('.ge-drawer-layer')!
+  const targetParentNode = getElement(pageConfig.page_type, pageConfig.condition_for_observe_parentnode.locate_method,
+    pageConfig.condition_for_observe_parentnode.location)!  // 要监听的元素（页面加载完就存在、且新出现的元素是其子节点）
+  if (!targetParentNode) {
+    console.log("要监听的元素为空，请检查")
+  } else {
+    const observeConfig = { attributes: true, childList: true, subtree: true }
+    const observerForSideBar = new MutationObserver(observerCallback)
+    observerForSideBar.observe(targetParentNode, observeConfig)
+  }
   console.log('???')
-  console.log(targetNode)
-  const observeConfig = { attributes: true, childList: true, subtree: true }
-  const observerForSideBar = new MutationObserver(observerCallback)
-  observerForSideBar.observe(targetNode, observeConfig)
+  console.log(targetParentNode)
+
 
   // 监听页面变化，符合要求时，初始化tooltip
-  if (labelDetecter(document)) {
+  if (labelDetecter(getDocument(pageConfig.page_type))) {
     setTimeout(() => {
       initTooltip()
     }, 1000)
@@ -113,34 +141,44 @@ function observerCallback(mutationList: any, _: any) {
 function initSidear() {
   // mount component to context window
   // create global element
-  const container = document.createElement('div')
+  const container = getDocument(pageConfig.page_type).createElement('div')
   container.id = __NAME__
-  const root = document.createElement('div')
+  const root = getDocument(pageConfig.page_type).createElement('div')
   // const shadowDOM = container.attachShadow?.({ mode: __DEV__ ? 'open' : 'closed' }) || container
   container.appendChild(root)
-  const sidebar = createApp(SideBar)
+  const sidebar = createApp(SideBar, {
+    fieldsConf: storageConf.value.fields,
+    verifiConf: storageConf.value.verification,
+    pageType: pageConfig.page_type,
+    formContainConf: pageConfig.form_container
+  })
   sidebar.use(ElementPlus)
   setupApp(sidebar)
   sidebar.mount(root)
-  document.body.appendChild(container)
+  getDocument(pageConfig.page_type).body.appendChild(container)
 }
 
 function initTooltip() {
-  console.log('????????????????????????????????')
+  console.log('initTooltip')
   deleteTooltip()
 
   // 遍历配置中各个字段，找到相应的标签，将tooltip初始化
   const promptsList = storageConf.value.prompts
   console.log(promptsList)
   for (const prompt of promptsList) {
-    const tooltip = createApp(Tooltip)
+    const thEle = getElement(pageConfig.page_type, prompt.locate_method, prompt.location)!
+    if (!thEle) {
+      continue
+    }
+    console.log("找到标签：" + prompt.field_name)
+    console.log(prompt.location)
 
+    const tooltip = createApp(Tooltip)
     tooltip.use(ElementPlus)
     setupApp(tooltip)
-    const mountEle = document.createElement('div')
-    mountEle.setAttribute('class', '')
-    console.log(prompt.location)
-    const thEle = document.querySelector(prompt.location)
+    const mountEle = getDocument(pageConfig.page_type).createElement('div')
+    mountEle.setAttribute('class', 'inline-block')
+
     thEle.classList.add('flex')
     thEle.classList.add('items-center')
     thEle?.appendChild(mountEle)

@@ -5,18 +5,35 @@ import { onMounted, ref } from 'vue'
 import { ElDrawer, ElMessage } from 'element-plus'
 import type { VerificationResult } from '~/logic/verification'
 import { verifyFuns } from '~/logic/verification'
-import { storageConf } from '~/logic/storage'
+import { getElement, getDocument } from '~/utils/commUtils'
 
 const activeCollapse = ref([''])
 const table = ref(false)
 const loading = ref(false)
 const verifiedCount = ref(0)
-const gridData1: { [key: string]: string | boolean | Element }[] = reactive([])
-const gridData2: { [key: string]: string | boolean | Element }[] = reactive([])
-let fieldsConf = storageConf.value.fields
-const verifiConf = storageConf.value.verification
+const gridData1: { [key: string]: string | boolean | Element | null }[] = reactive([])
+const gridData2: { [key: string]: string | boolean | Element | null }[] = reactive([])
+
+const props = defineProps({
+  fieldsConf: Array,
+  verifiConf: Array,
+  pageType: String,
+  formContainConf: Object
+})
+
+// let fieldsConf = storageConf.value.fields
+// const verifiConf = storageConf.value.verification
+// const pageType = storageConf.value.page_type
+let fieldsConf: any = props.fieldsConf
+let verifiConf: any = props.verifiConf
+const pageType: any = props.pageType!
+const conConfig = props.formContainConf!
 
 onMounted(() => {
+  if (fieldsConf === null) {
+    console.error("fields配置读取有误，请检查")
+    return
+  }
   fieldsConf = fieldsConfConvert(fieldsConf)
   // const { proxy, ctx } = getCurrentInstance()
   // console.log(proxy)
@@ -24,7 +41,7 @@ onMounted(() => {
   // proxy.$refs.drawer.addEventListener('mousedown', (event: any) => { console.log(event) })
 })
 
-document.onkeydown = function (event) {
+getDocument(pageType).onkeydown = function (event) {
   console.log(event)
   if (event.code === 'Tab' && (event.target as Element).tagName !== 'INPUT') {
     // Tab事件
@@ -44,18 +61,18 @@ function fieldsConfConvert(fieldsConf: any) {
 function getFieldsValue(fields: [string]) {
   console.log(fieldsConf)
   const values: any = {}
+  if (!fields)
+    return values
   for (const field of fields) {
     const fConf = fieldsConf[field]
-    if (fConf.locate_method === 'querySelector') {
-      const ele = document.querySelector(fConf.location)
-      if (ele === null) {
-        console.log(`Field [${fConf.field}]元素未找到，请检查。（${fConf.location}）`)
-        values[field] = null
-        continue
-      }
-      if (fConf.get_value_method === 'innerText')
-        values[field] = ele.innerText
+    const ele = getElement(pageType, fConf.locate_method, fConf.location)
+    if (ele === null) {
+      console.log(`Field [${fConf.field}]元素未找到，请检查。（${fConf.location}）`)
+      values[field] = null
+      continue
     }
+    if (fConf.get_value_method === 'innerText')
+      values[field] = (ele as any).innerText
   }
   return values
 }
@@ -70,10 +87,8 @@ function getLocateEle(field: string) {
   const fConf = fieldsConf[field]
   console.log('uuuuuu')
   console.log(fConf)
-  if (fConf.locate_method === 'querySelector') {
-    const ele = document.querySelector(fConf.location)
-    return ele
-  }
+  const ele = getElement(pageType, fConf.locate_method, fConf.location)
+  return ele
 }
 
 function onControlBtnClick() {
@@ -82,14 +97,13 @@ function onControlBtnClick() {
     return
   }
   // 只有当前页面是审批详情页时，才打开侧边栏
-  const conConfig = storageConf.value.form_container
-  if (conConfig.locate_method === 'querySelector') {
-    const container = document.querySelector(conConfig.location)
-    if (container && getComputedStyle(container).display !== 'none') {
-      table.value = true
-      return
-    }
+  
+  const container = getElement(pageType, conConfig.locate_method, conConfig.location)
+  if (container && getComputedStyle(container).display !== 'none') {
+    table.value = true
+    return
   }
+
   ElMessage({
     message: '请处于审批单详情页时再点击此按钮.',
     type: 'warning',
@@ -108,7 +122,7 @@ function onOpenFun() {
     verifiedCount.value += 1
     // 获取校验函数
     const vfun = verifyFuns[item.method]
-    if (vfun === null) {
+    if (!vfun) {
       console.log(`方法${item.method}没找到，请检查`)
       continue
     }
@@ -177,20 +191,15 @@ function handleResBtnCopy(row: { [key: string]: string }) {
 
 <template>
   <div @mousedown.stop.prevent>
-    <div class="fixed right-0 bottom-0 m-5 z-100 flex items-end font-sans select-none leading-1em">
-      <el-button
-        class="flex w-10 h-10 rounded-full shadow cursor-pointer border-none teal-600 hover:teal-700"
-        @click.stop="onControlBtnClick"
-      >
+    <div class="fixed right-0 bottom-0 m-5 z-100 flex items-end font-sans select-none leading-1em z-9999">
+      <el-button class="flex w-10 h-10 rounded-full shadow cursor-pointer border-none teal-600 hover:teal-700"
+        @click.stop="onControlBtnClick">
         <pixelarticons-power class="block m-auto text-white text-lg" />
       </el-button>
     </div>
 
-    <ElDrawer
-      ref="drawer" v-model="table" title="流程助手" direction="ltr" size="100%" :modal="false"
-      :close-on-click-modal="false" :lock-scroll="false" modal-class="drawer-modal"
-      @open="onOpenFun"
-    >
+    <ElDrawer ref="drawer" v-model="table" title="流程助手" direction="ltr" size="100%" :modal="false"
+      :close-on-click-modal="false" :lock-scroll="false" modal-class="drawer-modal" @open="onOpenFun">
       <div v-loading="loading" :element-loading-text="`校验中，请等待（${verifiedCount}/${verifiConf.length}）`">
         <el-table :data="gridData1" table-layout="auto" class="prochelper-table" max-height="350">
           <el-table-column property="verifyObj" label="检查项" width="150" />
@@ -224,7 +233,8 @@ function handleResBtnCopy(row: { [key: string]: string }) {
               <el-table-column label="操作" fixed="right" width="100">
                 <template #default="scope">
                   <el-tooltip class="box-item" effect="light" content="定位" placement="top">
-                    <el-button link type="primary" size="small" @click.prevent="handleResBtnLocate('hidden', scope.$index)">
+                    <el-button link type="primary" size="small"
+                      @click.prevent="handleResBtnLocate('hidden', scope.$index)">
                       <material-symbols-location-on-outline class="inline-block m-auto text-lg" />
                     </el-button>
                   </el-tooltip>
