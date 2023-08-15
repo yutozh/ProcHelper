@@ -5,7 +5,7 @@ import { storageDemo } from '~/logic/storage'
 <template>
   <main class="px-4 py-10 text-center text-gray-700 dark:text-gray-200">
     <img src="/assets/icon.svg" class="icon-btn mx-2 text-2xl" alt="extension icon">
-    <div>Options</div>
+    <div>配置页面</div>
     <SharedSubtitle />
 
     <input v-model="storageDemo" class="border border-gray-400 rounded px-2 py-1 mt-2">

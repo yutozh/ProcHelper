@@ -7,9 +7,9 @@ import SideBar from './views/SideBar.vue'
 import { setupApp } from '~/logic/common-setup'
 import 'element-plus/dist/index.css'
 import { storageConf } from '~/logic/storage'
-import { getElement, getDocument, getPageConfig } from '~/utils/commUtils'
+import { getDocument, getElement, getPageConfig } from '~/utils/commUtils'
 
-window.addEventListener('load', (event) => setTimeout((event) => initChecker(event), 1500), false)
+window.addEventListener('load', event => setTimeout(event => initChecker(event), 1500), false)
 // communication example: send previous tab title from background page
 onMessage('tab-prev', ({ data }) => {
   console.log(`[vitesse-webext] Navigate from page "${data.title}"`)
@@ -24,7 +24,7 @@ function initChecker(_event: any) {
   // 根据url读取相应的页面配置信息
   pageConfig = getPageConfig(storageConf.value.page_config, window.location.href)
   if (!pageConfig) {
-    console.log("没有找到页面配置项，请检查")
+    console.log('没有找到页面配置项，请检查')
     return
   }
 
@@ -34,18 +34,18 @@ function initChecker(_event: any) {
   let checkCount = 0
   const checkTimer = setInterval(checkForFinish, checkInterval)
 
-
   function checkForFinish() {
     if (getElement(pageConfig.page_type, pageConfig.condition_for_pageload.locate_method, pageConfig.condition_for_pageload.location)) {
       clearInterval(checkTimer)
       setTimeout(() => {
         pageCompleted(pageConfig.init_type)
       }, 2000)
-    } else {
-      console.log("Page not inited")
+    }
+    else {
+      console.log('Page not inited')
     }
     if (checkCount > checkMaxCount) {
-      console.log("Exceeded the maximum number of init check")
+      console.log('Exceeded the maximum number of init check')
       clearInterval(checkTimer)
     }
     checkCount++
@@ -82,27 +82,27 @@ function initCss() {
 function pageCompleted(initType: string) {
   initCss()
   initSidear()
-  if (initType === 'observer') {
+  if (initType === 'observer')
     startObserver()
-  } else if (initType === 'direct') {
+
+  else if (initType === 'direct')
     initTooltip()
-  }
 }
 
 function startObserver() {
   // 监听元素变化，符合要求时，初始化tooltip
   const targetParentNode = getElement(pageConfig.page_type, pageConfig.condition_for_observe_parentnode.locate_method,
-    pageConfig.condition_for_observe_parentnode.location)!  // 要监听的元素（页面加载完就存在、且新出现的元素是其子节点）
+    pageConfig.condition_for_observe_parentnode.location)! // 要监听的元素（页面加载完就存在、且新出现的元素是其子节点）
   if (!targetParentNode) {
-    console.log("要监听的元素为空，请检查")
-  } else {
+    console.log('要监听的元素为空，请检查')
+  }
+  else {
     const observeConfig = { attributes: true, childList: true, subtree: true }
     const observerForSideBar = new MutationObserver(observerCallback)
     observerForSideBar.observe(targetParentNode, observeConfig)
   }
   console.log('???')
   console.log(targetParentNode)
-
 
   // 监听页面变化，符合要求时，初始化tooltip
   if (labelDetecter(getDocument(pageConfig.page_type))) {
@@ -150,7 +150,7 @@ function initSidear() {
     fieldsConf: storageConf.value.fields,
     verifiConf: storageConf.value.verification,
     pageType: pageConfig.page_type,
-    formContainConf: pageConfig.form_container
+    formContainConf: pageConfig.form_container,
   })
   sidebar.use(ElementPlus)
   setupApp(sidebar)
@@ -167,10 +167,10 @@ function initTooltip() {
   console.log(promptsList)
   for (const prompt of promptsList) {
     const thEle = getElement(pageConfig.page_type, prompt.locate_method, prompt.location)!
-    if (!thEle) {
+    if (!thEle)
       continue
-    }
-    console.log("找到标签：" + prompt.field_name)
+
+    console.log(`找到标签：${prompt.field_name}`)
     console.log(prompt.location)
 
     const tooltip = createApp(Tooltip)
