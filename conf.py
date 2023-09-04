@@ -53,7 +53,7 @@ def read_config(path):
         }],
 
     }
-    with open("src/assets/config.json", "w+", encoding='utf-8') as f:
+    with open("src/assets/config/config.json", "w+", encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False)
 
 

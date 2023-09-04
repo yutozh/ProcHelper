@@ -42,7 +42,7 @@ export const sharedConfig: UserConfig = {
 
     // https://github.com/antfu/unplugin-vue-components
     Components({
-      dirs: [r('src/components')],
+      dirs: [r('src/components'), r('src/options')],
       // generate `components.d.ts` for ts support with Volar
       dts: r('src/components.d.ts'),
       resolvers: [
