@@ -1,3 +1,5 @@
+export { default as _meta } from './_meta.json'
+
 export { default as config1 } from './config1.json'
 export { default as temp } from './temp.json'
 

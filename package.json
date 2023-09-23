@@ -34,6 +34,7 @@
     "@antfu/eslint-config": "^0.36.0",
     "@ffflorian/jszip-cli": "^3.4.1",
     "@iconify/json": "^2.2.61",
+    "@lljj/vue3-form-element": "^1.18.0",
     "@playwright/test": "^1.33.0",
     "@types/fs-extra": "^11.0.1",
     "@types/node": "^18.16.5",
@@ -75,7 +76,6 @@
     "*": "eslint --fix"
   },
   "dependencies": {
-    "@lljj/vue3-form-element": "^1.18.0",
     "element-plus": "^2.3.7"
   }
 }

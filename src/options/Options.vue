@@ -54,12 +54,6 @@ onMounted(() => {
       </div>
     </el-col>
     <el-col :span="20">
-      <el-button>
-        test
-      </el-button>
-      <el-input>
-        p
-      </el-input>
       <component :is="currentView" v-bind="currentProps" />
       <!-- <div class="grid-content ep-bg-purple-light">
         <main class="px-4 py-10 text-center text-gray-700 dark:text-gray-200">

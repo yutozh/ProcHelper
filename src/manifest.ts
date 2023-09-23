@@ -43,11 +43,11 @@ export async function getManifest() {
     content_scripts: [
       {
         matches: [
-          '*://plcm.cncc.cn:30080/osc/*',
-          '*://plcm.cncc.cn:30080/_team/*',
+          '*://plcm.cncc.cn:*/osc/*',
+          '*://plcm.cncc.cn:*/_team/*',
         ],
         exclude_matches: [
-          '*://plcm.cncc.cn:30080/osc/_proxima/*'
+          '*://plcm.cncc.cn:*/osc/_proxima/*'
         ],
         js: [
           'dist/contentScripts/index.global.js',

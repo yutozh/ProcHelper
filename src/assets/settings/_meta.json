@@ -1,0 +1,172 @@
+{
+    "prompts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$name": "提示",
+        "type": "object",
+        "properties": {
+            "platform": {
+                "type": "string",
+                "title": "平台"
+            },
+            "proc_type": {
+                "type": "string",
+                "title": "流程类型"
+            },
+            "field_id": {
+                "type": "string",
+                "title": "字段id"
+            },
+            "field_name": {
+                "type": "string",
+                "title": "字段名"
+            },
+            "locate_method": {
+                "type": "string",
+                "title": "定位方法"
+            },
+            "location": {
+                "type": "string",
+                "title": "定位信息"
+            },
+            "other_config": {
+                "type": "string",
+                "title": "其他配置"
+            },
+            "hint_popup": {
+                "type": "array",
+                "title": "提示信息",
+                "minItems": 1,
+                "maxItems": 3,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": [
+                                "string"
+                            ],
+                            "title": "标题"
+                        },
+                        "content": {
+                            "type": [
+                                "string"
+                            ],
+                            "title": "内容"
+                        },
+                        "config": {
+                            "type": "string",
+                            "title": "设置"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "platform",
+            "proc_type",
+            "field_id",
+            "field_name",
+            "locate_method",
+            "location",
+            "other_config",
+            "hint_popup"
+        ]
+    },
+    "fields": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$name": "字段",
+        "type": "object",
+        "properties": {
+            "field_id": {
+                "type": "string",
+                "title": "字段id"
+            },
+            "field_name": {
+                "type": "string",
+                "title": "字段名"
+            },
+            "locate_method": {
+                "type": "string",
+                "title": "定位方法"
+            },
+            "location": {
+                "type": "string",
+                "title": "定位信息"
+            },
+            "get_value_method": {
+                "type": "string",
+                "title": "取值方法"
+            },
+            "get_value_custom_fun": {
+                "type": "string",
+                "title": "自定义函数"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "field_id",
+            "field_name",
+            "locate_method",
+            "location",
+            "get_value_method"
+        ]
+    },
+    "verification": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$name": "校验",
+        "type": "object",
+        "properties": {
+            "vid": {
+                "type": "string"
+            },
+            "obj": {
+                "type": "string"
+            },
+            "info": {
+                "type": "string"
+            },
+            "detail": {
+                "type": "null"
+            },
+            "method": {
+                "type": "string"
+            },
+            "locate_field": {
+                "type": "string"
+            },
+            "batch": {
+                "type": "boolean"
+            },
+            "fields": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "params": {
+                "type": "object",
+                "properties": {
+                    "length": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "length"
+                ]
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "vid",
+            "obj",
+            "info",
+            "method",
+            "locate_field",
+            "batch",
+            "fields",
+            "params"
+        ]
+    }
+}
